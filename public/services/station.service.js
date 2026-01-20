@@ -5,17 +5,17 @@ import { utilService } from './util.service.js'
 import { userService } from './user.service.js'
 
 
-const STORAGE_KEY = 'car'
+const STORAGE_KEY = 'station'
 
-export const carService = {
+export const stationService = {
     query,
     getById,
     save,
     remove,
-    getEmptyCar,
-    addCarMsg
+    getEmptyStation,
+    addStationMsg
 }
-window.cs = carService
+window.cs = stationService
 
 
 async function query(filterBy = { txt: '', price: 0 }) {
@@ -32,31 +32,31 @@ async function query(filterBy = { txt: '', price: 0 }) {
     // return cars
 
 }
-function getById(carId) {
+function getById(stationId) {
     // return storageService.get(STORAGE_KEY, carId)
-    return httpService.get(`car/${carId}`)
+    return httpService.get(`station/${stationId}`)
 }
 
-async function remove(carId) {
+async function remove(stationId) {
     // await storageService.remove(STORAGE_KEY, carId)
-    return httpService.delete(`car/${carId}`)
+    return httpService.delete(`station/${stationId}`)
 }
-async function save(car) {
-    var savedCar
-    if (car._id) {
+async function save(station) {
+    var savedStation
+    if (station._id) {
         // savedCar = await storageService.put(STORAGE_KEY, car)
-        savedCar = await httpService.put(`car/${car._id}`, car)
+        savedStation = await httpService.put(`station/${station._id}`, station)
 
     } else {
         // Later, owner is set by the backend
         // car.owner = userService.getLoggedinUser()
         // savedCar = await storageService.post(STORAGE_KEY, car)
-        savedCar = await httpService.post('car', car)
+        savedStation = await httpService.post('station', station)
     }
-    return savedCar
+    return savedStation
 }
 
-async function addCarMsg(carId, txt) {
+async function addStationMsg(stationId, txt) {
     // const car = await getById(carId)
     // if (!car.msgs) car.msgs = []
 
@@ -67,12 +67,12 @@ async function addCarMsg(carId, txt) {
     // }
     // car.msgs.push(msg)
     // await storageService.put(STORAGE_KEY, car)    
-    const savedMsg = await httpService.post(`car/${carId}/msg`, {txt})
+    const savedMsg = await httpService.post(`station/${stationId}/msg`, {txt})
     return savedMsg
 }
 
 
-function getEmptyCar() {
+function getEmptyStation() {
     return {
         vendor: 'Susita-' + (Date.now() % 1000),
         price: utilService.getRandomIntInclusive(1000, 9000),
