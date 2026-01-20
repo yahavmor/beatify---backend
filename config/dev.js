@@ -1,4 +1,4 @@
 export default {
-    dbURL: 'mongodb://127.0.0.1:27017',
-    dbName: 'tester_db',
+    dbURL: 'mongodb+srv://yahavmor77_db_user:PicoMan20!@yahavmor.8urmsdo.mongodb.net/?appName=yahavMor',
+    dbName: 'BeatifyDB',
 }
