@@ -16,7 +16,7 @@ export const carService = {
 
 async function query(filterBy = { txt: '' }) {
 	try {
-		const collection = await dbService.getCollection('station')
+		const collection = await dbService.getCollection('Station')
 		var stations = await collection.find(criteria).toArray()
 		return stations
 	} catch (err) {
@@ -27,7 +27,7 @@ async function query(filterBy = { txt: '' }) {
 
 async function getById(stationId) {
 	try {
-		const collection = await dbService.getCollection('station')
+		const collection = await dbService.getCollection('Station')
 		const station = await collection.findOne({ _id: ObjectId.createFromHexString(stationId) })
 		station.createdAt = station._id.getTimestamp()
 		return station
@@ -39,7 +39,7 @@ async function getById(stationId) {
 
 async function remove(stationId) {
 	try {
-		const collection = await dbService.getCollection('station')
+		const collection = await dbService.getCollection('Station')
 		const { deletedCount } = await collection.deleteOne({ _id: ObjectId.createFromHexString(stationId) })
         return deletedCount
 	} catch (err) {
@@ -50,7 +50,7 @@ async function remove(stationId) {
 
 async function add(station) {
 	try {
-		const collection = await dbService.getCollection('station')
+		const collection = await dbService.getCollection('Station')
 		await collection.insertOne(station)
 		return station
 	} catch (err) {
@@ -65,7 +65,7 @@ async function update(station) {
 		// 	vendor: car.vendor,
 		// 	price: car.price,
 		// }
-		const collection = await dbService.getCollection('station')
+		const collection = await dbService.getCollection('Station')
 		await collection.updateOne({ _id: ObjectId.createFromHexString(station._id) }, { $set: stationToSave })
 		return station
 	} catch (err) {
@@ -78,7 +78,7 @@ async function addStationMsg(stationId, msg) {
 	try {
 		msg.id = utilService.makeId()
 
-		const collection = await dbService.getCollection('station')
+		const collection = await dbService.getCollection('Station')
 		await collection.updateOne({ _id: ObjectId.createFromHexString(stationId) }, { $push: { msgs: msg } })
 		return msg
 	} catch (err) {
@@ -89,7 +89,7 @@ async function addStationMsg(stationId, msg) {
 
 async function removeStationMsg(stationId, msgId) {
 	try {
-		const collection = await dbService.getCollection('station')
+		const collection = await dbService.getCollection('Station')
 		await collection.updateOne({ _id: ObjectId.createFromHexString(stationId) }, { $pull: { msgs: { id: msgId }}})
 		return msgId
 	} catch (err) {

@@ -7,7 +7,7 @@ if (!fs.existsSync(logsDir)) {
 
 export const logger = {
     debug(...args) {
-        if (process.env.NODE_NEV === 'production') return
+    if (process.env.NODE_ENV === 'production') return
         _doLog('DEBUG', ...args)
     },
     info(...args) {
@@ -33,16 +33,15 @@ function _isError(e) {
 function _doLog(level, ...args) {
 
     const strs = args.map(arg => {
-        if (typeof arg ===  'string') {
-        } else if (_isError(arg)) {
-        } else if (arg instanceof Promise) {
-            arg = 'Promise'
-        } else {
-            arg = JSON.stringify(arg)    
+        if (typeof arg === 'string') return arg
+        if (_isError(arg)) return `${arg.message} | ${arg.stack}`
+        if (arg instanceof Promise) return 'Promise'
+        try {
+            return JSON.stringify(arg)
+        } catch {
+            return 'Unserializable object'
         }
-        return arg
-    })   
-
+    })
     var line = strs.join(' | ')
     line = `${_getTime()} - ${level} - ${line} \n`
     console.log(line)
