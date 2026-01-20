@@ -14,7 +14,6 @@ export const userService = {
 
 async function query(filterBy = {}) {
 	const criteria = _buildCriteria(filterBy)
-	console.log(criteria)
 
     
 	try {

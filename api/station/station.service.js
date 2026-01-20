@@ -14,16 +14,17 @@ export const carService = {
 	removeStationMsg,
 }
 
-async function query(filterBy = { txt: '' }) {
-	try {
-		const collection = await dbService.getCollection('Station')
-		var stations = await collection.find(criteria).toArray()
-		return stations
-	} catch (err) {
-		logger.error('cannot find stations', err)
-		throw err
-	}
+async function query(filterBy = {}) {
+    try {
+        const collection = await dbService.getCollection('Station')
+        const stations = await collection.find({}).toArray()
+        return stations
+    } catch (err) {
+        logger.error('cannot find stations', err)
+        throw err
+    }
 }
+
 
 async function getById(stationId) {
 	try {
