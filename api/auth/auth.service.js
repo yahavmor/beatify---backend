@@ -1,6 +1,6 @@
 import Cryptr from 'cryptr'
 import bcrypt from 'bcryptjs'
-
+import { ObjectId } from 'mongodb'
 import { userService } from '../user/user.service.js'
 import { logger } from '../../services/logger.service.js'
 
@@ -31,9 +31,16 @@ async function signup(username, password, fullname) {
 
     logger.debug(`auth.service - signup with username: ${username}, fullname: ${fullname}`)
     if (!username || !password || !fullname) throw new Error('Missing details')
-
     const hash = await bcrypt.hash(password, saltRounds)
-    return userService.add({ username, password: hash, fullname })
+    const userToAdd = {
+        _id: ObjectId.createFromHexString('696f7ceb4ef3a825b899f136'),
+        username: username,
+        fullname: fullname,
+        password: hash,
+        imgUrl: 'https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359553_1280.png',
+        likedSongs: []
+    }
+    return userService.add(userToAdd)
 }
 
 function getLoginToken(user) {

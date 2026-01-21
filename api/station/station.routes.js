@@ -12,7 +12,9 @@ import {
     addSong,
     removeSong,
     toggleLikeStation,
-    getLikedSongsStation
+    getLikedSongsStation,
+    likeSong,
+    removeLikeSong
 } from './station.controller.js'
 
 export const stationRoutes = express.Router()
@@ -31,4 +33,10 @@ stationRoutes.delete('/:id/msg/:msgId', requireAuth, removeStationMsg)
 stationRoutes.post('/:id/song', requireAuth, addSong)
 stationRoutes.delete('/:id/song/:songId', requireAuth, removeSong)
 
+
+stationRoutes.post('/:id/song/:songId/like', requireAuth,likeSong)
+stationRoutes.delete('/:id/song/:songId/like', requireAuth, removeLikeSong)
+
+
 stationRoutes.post('/:id/like', requireAuth, toggleLikeStation)
+

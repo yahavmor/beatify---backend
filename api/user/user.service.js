@@ -66,12 +66,10 @@ async function remove(userId) {
 
 async function update(user) {
 	try {
-		// peek only updatable fields!
 		const userToSave = {
 			_id: ObjectId.createFromHexString(user._id),
 			username: user.username,
 			fullname: user.fullname,
-			score: user.score,
 		}
 		const collection = await dbService.getCollection('User')
 		await collection.updateOne({ _id: userToSave._id }, { $set: userToSave })
@@ -84,16 +82,15 @@ async function update(user) {
 
 async function add(user) {
 	try {
-		// Validate that there are no such user:
 		const existUser = await getByUsername(user.username)
 		if (existUser) throw new Error('Username taken')
 
-		// peek only updatable fields!
 		const userToAdd = {
 			username: user.username,
 			password: user.password,
 			fullname: user.fullname,
-			score: user.score || 0,
+			imgUrl: user.imgUrl,
+			likedSongs: [],
 		}
 		const collection = await dbService.getCollection('User')
 		await collection.insertOne(userToAdd)

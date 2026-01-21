@@ -23,8 +23,20 @@ export async function getStationById(req, res) {
 
 export async function addStation(req, res) {
     try {
-        const station = req.body
-        station.owner = req.loggedinUser
+        const loggedinUser = req.loggedinUser
+        const station = {
+            name: req.body.name || 'New Station',
+            description: req.body.description || '',
+            averageColor: req.body.averageColor || 'rgba(0,0,0,0.5)',
+            tags: req.body.tags || [],
+            createdBy: {
+                _id: loggedinUser._id,
+                fullname: loggedinUser.fullname
+            },
+            likedByUsers: [],
+            songs: []
+        }
+
         const addedStation = await stationService.add(station)
         res.json(addedStation)
     } catch (err) {
@@ -32,6 +44,7 @@ export async function addStation(req, res) {
         res.status(500).send({ err: 'Failed to add station' })
     }
 }
+
 
 export async function updateStation(req, res) {
     try {
@@ -118,3 +131,32 @@ export async function getLikedSongsStation(req, res) {
         res.status(500).send({ err: 'Failed to get liked songs station' })
     }
 }
+export async function likeSong(req, res) {
+    try {
+        const stationId = req.params.id
+        const songId = +req.params.songId
+        const user = req.loggedinUser
+
+        const updatedUser = await stationService.likeSong(stationId, songId, user)
+        res.json(updatedUser)
+    } catch (err) {
+        logger.error('Failed to like song', err)
+        res.status(500).send({ err: 'Failed to like song' })
+    }
+}
+export async function removeLikeSong(req, res) {
+    try {
+        const stationId = req.params.id
+        const songId = +req.params.songId
+        const user = req.loggedinUser
+
+        const updatedUser = await stationService.removeLikeSong(stationId, songId, user)
+        res.json(updatedUser)
+    } catch (err) {
+        logger.error('Failed to remove like from song', err)
+        res.status(500).send({ err: 'Failed to remove like from song' })
+    }
+}
+
+
+

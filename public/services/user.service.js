@@ -66,14 +66,13 @@ async function logout() {
 async function changeScore(by) {
     const user = getLoggedinUser()
     if (!user) throw new Error('Not loggedin')
-    user.score = user.score + by || by
     await update(user)
     return user.score
 }
 
 
 function saveLocalUser(user) {
-    user = {_id: user._id, fullname: user.fullname, imgUrl: user.imgUrl, score: user.score, isAdmin: user.isAdmin}
+    user = {_id: user._id, fullname: user.fullname, imgUrl: user.imgUrl, isAdmin: user.isAdmin}
     sessionStorage.setItem(STORAGE_KEY_LOGGEDIN_USER, JSON.stringify(user))
     return user
 }

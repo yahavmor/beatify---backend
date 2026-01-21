@@ -8,7 +8,12 @@ export async function login(req, res) {
         const loginToken = authService.getLoginToken(user)
         
         logger.info('User login: ', user)
-        res.cookie('loginToken', loginToken)
+        res.cookie('loginToken', loginToken, {
+            httpOnly: true,
+            sameSite: 'lax',
+            secure: false,
+            path: '/'
+        })
 
         res.json(user)
     } catch (err) {
@@ -31,7 +36,12 @@ export async function signup(req, res) {
         const user = await authService.login(username, password)
         const loginToken = authService.getLoginToken(user)
 
-        res.cookie('loginToken', loginToken)
+        res.cookie('loginToken', loginToken, {
+            httpOnly: true,
+            sameSite: 'lax',
+            secure: false, 
+            path: '/'
+        })
         res.json(user)
     } catch (err) {
         logger.error('Failed to signup ' + err)

@@ -2,6 +2,8 @@ import { ObjectId } from 'mongodb'
 import { dbService } from '../../services/db.service.js'
 import { utilService } from '../../services/util.service.js'
 import { logger } from '../../services/logger.service.js'
+import { userService } from '../user/user.service.js'
+
 
 export const stationService = {
     query,
@@ -14,7 +16,9 @@ export const stationService = {
     addSong,
     removeSong,
     toggleLikeStation,
-    getLikedSongsStation
+    getLikedSongsStation,
+    likeSong,
+    removeLikeSong
 }
 
 async function query() {
@@ -73,22 +77,32 @@ async function removeStationMsg(stationId, msgId) {
 }
 
 async function addSong(stationId, song) {
+    const formattedSong = {
+        id: song.id || Date.now(), 
+        title: song.title || 'Untitled Song',
+        imgUrl: song.imgUrl || '',
+        src: song.src || ''
+    }
+
     const collection = await dbService.getCollection('Station')
     await collection.updateOne(
         { _id: ObjectId.createFromHexString(stationId) },
-        { $push: { songs: song } }
+        { $push: { songs: formattedSong } }
     )
+
     return getById(stationId)
 }
+
 
 async function removeSong(stationId, songId) {
     const collection = await dbService.getCollection('Station')
     await collection.updateOne(
         { _id: ObjectId.createFromHexString(stationId) },
-        { $pull: { songs: { id: songId } } }
+        { $pull: { songs: { id: +songId } } }   
     )
     return getById(stationId)
 }
+
 
 async function toggleLikeStation(stationId, user) {
     const collection = await dbService.getCollection('Station')
@@ -119,3 +133,32 @@ async function getLikedSongsStation(userId) {
         createdBy: { _id: userId }
     }
 }
+async function likeSong(stationId, songId, user) {
+    const station = await getById(stationId)
+    if (!station) throw new Error('Station not found')
+    const song = station.songs.find(s => s.id === songId)
+    if (!song) throw new Error('Song not found')
+    const userCollection = await dbService.getCollection('User')
+    const alreadyLiked = user.likedSongsStations?.some(s => s.id === songId)
+    if (alreadyLiked) {
+        return userService.getById(user._id)
+    }
+    await userCollection.updateOne(
+        { _id: ObjectId.createFromHexString(user._id) },
+        { $push: { likedSongsStations: song } }
+    )
+
+    return userService.getById(user._id)
+}
+
+async function removeLikeSong(stationId, songId, user) {
+    const userCollection = await dbService.getCollection('User')
+
+    await userCollection.updateOne(
+        { _id: ObjectId.createFromHexString(user._id) },
+        { $pull: { likedSongsStations: { id: songId } } }
+    )
+
+    return userService.getById(user._id)
+}
+
