@@ -1,48 +1,42 @@
 import { userService } from './user.service.js'
 import { logger } from '../../services/logger.service.js'
 
-export async function getUser(req, res) {
-    console.log('GET USERS HIT!')
-    try {
-        const user = await userService.getById(req.params.id)
-        res.send(user)
-    } catch (err) {
-        logger.error('Failed to get user', err)
-        res.status(500).send({ err: 'Failed to get user' })
-    }
-}
-
 export async function getUsers(req, res) {
     try {
-        const filterBy = {
-            txt: req.query?.txt || '',
-            minBalance: +req.query?.minBalance || 0
-        }
-        const users = await userService.query(filterBy)
-        res.send(users)
+        const users = await userService.query()
+        res.json(users)
     } catch (err) {
         logger.error('Failed to get users', err)
         res.status(500).send({ err: 'Failed to get users' })
     }
 }
 
-export async function deleteUser(req, res) {
+export async function getUser(req, res) {
     try {
-        await userService.remove(req.params.id)
-        res.send({ msg: 'Deleted successfully' })
+        const user = await userService.getById(req.params.id)
+        res.json(user)
     } catch (err) {
-        logger.error('Failed to delete user', err)
-        res.status(500).send({ err: 'Failed to delete user' })
+        logger.error('Failed to get user', err)
+        res.status(500).send({ err: 'Failed to get user' })
     }
 }
 
 export async function updateUser(req, res) {
     try {
-        const user = req.body
-        const savedUser = await userService.update(user)
-        res.send(savedUser)
+        const updatedUser = await userService.update(req.body)
+        res.json(updatedUser)
     } catch (err) {
         logger.error('Failed to update user', err)
         res.status(500).send({ err: 'Failed to update user' })
+    }
+}
+
+export async function deleteUser(req, res) {
+    try {
+        await userService.remove(req.params.id)
+        res.send({ msg: 'User removed' })
+    } catch (err) {
+        logger.error('Failed to delete user', err)
+        res.status(500).send({ err: 'Failed to delete user' })
     }
 }

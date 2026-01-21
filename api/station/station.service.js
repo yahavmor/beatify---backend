@@ -1,100 +1,121 @@
 import { ObjectId } from 'mongodb'
-
 import { dbService } from '../../services/db.service.js'
-import { logger } from '../../services/logger.service.js'
 import { utilService } from '../../services/util.service.js'
+import { logger } from '../../services/logger.service.js'
 
-export const carService = {
-	remove,
-	query,
-	getById,
-	add,
-	update,
-	addStationMsg,
-	removeStationMsg,
+export const stationService = {
+    query,
+    getById,
+    add,
+    update,
+    remove,
+    addStationMsg,
+    removeStationMsg,
+    addSong,
+    removeSong,
+    toggleLikeStation,
+    getLikedSongsStation
 }
 
-async function query(filterBy = {}) {
-    try {
-        const collection = await dbService.getCollection('Station')
-        const stations = await collection.find({}).toArray()
-        return stations
-    } catch (err) {
-        logger.error('cannot find stations', err)
-        throw err
-    }
+async function query() {
+    const collection = await dbService.getCollection('Station')
+    return collection.find().toArray()
 }
-
 
 async function getById(stationId) {
-	try {
-		const collection = await dbService.getCollection('Station')
-		const station = await collection.findOne({ _id: ObjectId.createFromHexString(stationId) })
-		station.createdAt = station._id.getTimestamp()
-		return station
-	} catch (err) {
-		logger.error(`while finding car ${stationId}`, err)
-		throw err
-	}
-}
-
-async function remove(stationId) {
-	try {
-		const collection = await dbService.getCollection('Station')
-		const { deletedCount } = await collection.deleteOne({ _id: ObjectId.createFromHexString(stationId) })
-        return deletedCount
-	} catch (err) {
-		logger.error(`cannot remove car ${stationId}`, err)
-		throw err
-	}
+    const collection = await dbService.getCollection('Station')
+    const station = await collection.findOne({ _id: ObjectId.createFromHexString(stationId) })
+    return station
 }
 
 async function add(station) {
-	try {
-		const collection = await dbService.getCollection('Station')
-		await collection.insertOne(station)
-		return station
-	} catch (err) {
-		logger.error('cannot insert station', err)
-		throw err
-	}
+    const collection = await dbService.getCollection('Station')
+    await collection.insertOne(station)
+    return station
 }
 
 async function update(station) {
-	try {
-		// const stationToSave = {
-		// 	vendor: car.vendor,
-		// 	price: car.price,
-		// }
-		const collection = await dbService.getCollection('Station')
-		await collection.updateOne({ _id: ObjectId.createFromHexString(station._id) }, { $set: stationToSave })
-		return station
-	} catch (err) {
-		logger.error(`cannot update car ${station._id}`, err)
-		throw err
-	}
+    const stationToSave = { ...station }
+    delete stationToSave._id
+
+    const collection = await dbService.getCollection('Station')
+    await collection.updateOne(
+        { _id: ObjectId.createFromHexString(station._id) },
+        { $set: stationToSave }
+    )
+    return station
+}
+
+async function remove(stationId) {
+    const collection = await dbService.getCollection('Station')
+    const { deletedCount } = await collection.deleteOne({ _id: ObjectId.createFromHexString(stationId) })
+    return deletedCount
 }
 
 async function addStationMsg(stationId, msg) {
-	try {
-		msg.id = utilService.makeId()
+    msg.id = utilService.makeId()
 
-		const collection = await dbService.getCollection('Station')
-		await collection.updateOne({ _id: ObjectId.createFromHexString(stationId) }, { $push: { msgs: msg } })
-		return msg
-	} catch (err) {
-		logger.error(`cannot add car msg ${stationId}`, err)
-		throw err
-	}
+    const collection = await dbService.getCollection('Station')
+    await collection.updateOne(
+        { _id: ObjectId.createFromHexString(stationId) },
+        { $push: { msgs: msg } }
+    )
+    return msg
 }
 
 async function removeStationMsg(stationId, msgId) {
-	try {
-		const collection = await dbService.getCollection('Station')
-		await collection.updateOne({ _id: ObjectId.createFromHexString(stationId) }, { $pull: { msgs: { id: msgId }}})
-		return msgId
-	} catch (err) {
-		logger.error(`cannot add car msg ${stationId}`, err)
-		throw err
-	}
+    const collection = await dbService.getCollection('Station')
+    await collection.updateOne(
+        { _id: ObjectId.createFromHexString(stationId) },
+        { $pull: { msgs: { id: msgId } } }
+    )
+    return msgId
+}
+
+async function addSong(stationId, song) {
+    const collection = await dbService.getCollection('Station')
+    await collection.updateOne(
+        { _id: ObjectId.createFromHexString(stationId) },
+        { $push: { songs: song } }
+    )
+    return getById(stationId)
+}
+
+async function removeSong(stationId, songId) {
+    const collection = await dbService.getCollection('Station')
+    await collection.updateOne(
+        { _id: ObjectId.createFromHexString(stationId) },
+        { $pull: { songs: { id: songId } } }
+    )
+    return getById(stationId)
+}
+
+async function toggleLikeStation(stationId, user) {
+    const collection = await dbService.getCollection('Station')
+
+    const station = await getById(stationId)
+    const isLiked = station.likedByUsers?.some(u => u._id === user._id)
+
+    await collection.updateOne(
+        { _id: ObjectId.createFromHexString(stationId) },
+        isLiked
+            ? { $pull: { likedByUsers: { _id: user._id } } }
+            : { $push: { likedByUsers: user } }
+    )
+
+    return getById(stationId)
+}
+
+async function getLikedSongsStation(userId) {
+    const collection = await dbService.getCollection('Station')
+
+    const stations = await collection.find({ likedByUsers: { $elemMatch: { _id: userId } } }).toArray()
+
+    return {
+        _id: 'likedSongs',
+        name: 'Liked Songs',
+        songs: stations.flatMap(st => st.songs),
+        likedByUsers: [],
+        createdBy: { _id: userId }
+    }
 }
