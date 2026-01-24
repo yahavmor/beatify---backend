@@ -24,9 +24,11 @@ export async function getStationById(req, res) {
 export async function addStation(req, res) {
     try {
         const loggedinUser = req.loggedinUser
+
         const station = {
             name: req.body.name || 'New Station',
             description: req.body.description || '',
+            imgUrl: req.body.imgUrl || '',
             averageColor: req.body.averageColor || 'rgba(0,0,0,0.5)',
             tags: req.body.tags || [],
             createdBy: {
@@ -34,7 +36,8 @@ export async function addStation(req, res) {
                 fullname: loggedinUser.fullname
             },
             likedByUsers: [],
-            songs: []
+            songs: [],
+            msgs: []
         }
 
         const addedStation = await stationService.add(station)
@@ -44,6 +47,7 @@ export async function addStation(req, res) {
         res.status(500).send({ err: 'Failed to add station' })
     }
 }
+
 
 
 export async function updateStation(req, res) {

@@ -70,6 +70,9 @@ async function update(user) {
 			_id: ObjectId.createFromHexString(user._id),
 			username: user.username,
 			fullname: user.fullname,
+			imgUrl: user.imgUrl,
+			likedSongs: user.likedSongs,
+			likedSongsStations: user.likedSongsStations
 		}
 		const collection = await dbService.getCollection('User')
 		await collection.updateOne({ _id: userToSave._id }, { $set: userToSave })
@@ -91,6 +94,7 @@ async function add(user) {
 			fullname: user.fullname,
 			imgUrl: user.imgUrl,
 			likedSongs: [],
+			likedSongsStations: []
 		}
 		const collection = await dbService.getCollection('User')
 		await collection.insertOne(userToAdd)

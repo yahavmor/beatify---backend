@@ -33,28 +33,37 @@ async function signup(username, password, fullname) {
     if (!username || !password || !fullname) throw new Error('Missing details')
     const hash = await bcrypt.hash(password, saltRounds)
     const userToAdd = {
-        _id: ObjectId.createFromHexString('696f7ceb4ef3a825b899f136'),
         username: username,
         fullname: fullname,
         password: hash,
         imgUrl: 'https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359553_1280.png',
-        likedSongs: []
+        likedSongs: [],
+        likedSongsStations: []
     }
     return userService.add(userToAdd)
 }
 
 function getLoginToken(user) {
-    const userInfo = {_id : user._id, fullname: user.fullname, isAdmin: user.isAdmin}
-    return cryptr.encrypt(JSON.stringify(userInfo))    
+    const userInfo = {
+        _id: user._id,
+        fullname: user.fullname,
+        username: user.username,
+        imgUrl: user.imgUrl,
+        likedSongs: user.likedSongs || [],
+        likedSongsStations: user.likedSongsStations || []
+    }
+    return cryptr.encrypt(JSON.stringify(userInfo))
 }
+
 
 function validateToken(loginToken) {
     try {
         const json = cryptr.decrypt(loginToken)
         const loggedinUser = JSON.parse(json)
         return loggedinUser
-    } catch(err) {
+    } catch (err) {
         console.log('Invalid login token')
+        return null
     }
-    return null
 }
+
