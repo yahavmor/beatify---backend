@@ -36,7 +36,7 @@ export async function addStation(req, res) {
                 fullname: loggedinUser.fullname
             },
             likedByUsers: [],
-            songs: [],
+            songs: req.body.songs || [],
             msgs: []
         }
 
@@ -135,6 +135,8 @@ export async function getLikedSongsStation(req, res) {
         res.status(500).send({ err: 'Failed to get liked songs station' })
     }
 }
+
+
 export async function likeSong(req, res) {
     try {
         const stationId = req.params.id
