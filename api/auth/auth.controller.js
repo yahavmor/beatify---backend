@@ -1,5 +1,6 @@
 import { authService } from './auth.service.js'
 import { logger } from '../../services/logger.service.js'
+import { userService } from '../user/user.service.js'
 
 export async function login(req, res) {
     const { username, password } = req.body
@@ -26,10 +27,6 @@ export async function signup(req, res) {
     try {
         const { username, password, fullname } = req.body
         
-        // IMPORTANT!!! 
-        // Never write passwords to log file!!!
-        // logger.debug(fullname + ', ' + username + ', ' + password)
-        
         const account = await authService.signup(username, password, fullname)
         logger.debug(`auth.route - new account created: ` + JSON.stringify(account))
         
@@ -55,5 +52,30 @@ export async function logout(req, res){
         res.send({ msg: 'Logged out successfully' })
     } catch (err) {
         res.status(500).send({ err: 'Failed to logout' })
+    }
+}
+
+export async function loginDefault(req, res) {
+    try {
+        const defaultUser = await userService.getByUsername('Default')
+
+        if (!defaultUser) {
+            return res.status(404).send({ error: 'Default user not found' })
+        }
+
+        const loginToken = authService.getLoginToken(defaultUser)
+
+        res.cookie('loginToken', loginToken, {
+            httpOnly: true,
+            sameSite: 'lax',
+            secure: false,
+            path: '/'
+        })
+
+        res.json(defaultUser)
+
+    } catch (err) {
+        logger.error('Failed to login default user ' + err)
+        res.status(500).send({ error: 'Failed to load default user' })
     }
 }
