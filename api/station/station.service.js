@@ -41,7 +41,7 @@ async function add(station) {
 
 async function update(station) {
     const stationToSave = { ...station }
-    // delete stationToSave._id
+    delete stationToSave._id
 
     const collection = await dbService.getCollection('Station')
     await collection.updateOne(
