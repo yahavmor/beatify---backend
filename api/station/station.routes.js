@@ -11,7 +11,7 @@ import {
     removeStationMsg,
     addSong,
     removeSong,
-    toggleLikeStation,
+    addStationToLibrary,
     getLikedSongsStation,
     likeSong,
     removeLikeSong
@@ -38,5 +38,5 @@ stationRoutes.post('/:id/song/:songId/like', requireAuth,likeSong)
 stationRoutes.delete('/:id/song/:songId/like', requireAuth, removeLikeSong)
 
 
-stationRoutes.post('/:id/like', requireAuth, toggleLikeStation)
+stationRoutes.post('/:id/addToLibrary', requireAuth, addStationToLibrary)
 

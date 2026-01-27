@@ -18,7 +18,17 @@ export const stationService = {
     toggleLikeStation,
     getLikedSongsStation,
     likeSong,
-    removeLikeSong
+    removeLikeSong,
+    addStationToLibrary
+}
+async function addStationToLibrary(stationId, user) {
+    const userCollection = await dbService.getCollection('User')
+    const station = await getById(stationId)
+    await userCollection.updateOne(
+        { _id: ObjectId.createFromHexString(user._id) },
+        { $push: { likedStations: { _id: station._id, name: station.name } } }
+    )   
+    return userService.getById(user._id)
 }
 
 async function query() {

@@ -10,6 +10,17 @@ export async function getStations(req, res) {
         res.status(500).send({ err: 'Failed to get stations' })
     }
 }
+export async function addStationToLibrary(req, res) {
+    try {
+        const stationId = req.params.id
+        const user = req.loggedinUser 
+        const updatedUser = await stationService.addStationToLibrary(stationId, user)
+        res.json(updatedUser)
+    } catch (err) {
+        logger.error('Failed to add station to library', err)
+        res.status(500).send({ err: 'Failed to add station to library' })
+    }
+}
 
 export async function getStationById(req, res) {
     try {
