@@ -9,12 +9,33 @@ import { authRoutes } from './api/auth/auth.routes.js'
 import { userRoutes } from './api/user/user.routes.js'
 import { stationRoutes } from './api/station/station.routes.js'
 
+import { createServer } from 'http'
+import { Server } from 'socket.io'
+
 const app = express()
+
+const httpServer = createServer(app)
+
+const io = new Server(httpServer, {
+    cors: {
+        origin: '*',
+        methods: ['GET', 'POST']
+    }
+})
+
+io.on('connection', socket => {
+    console.log('User connected:', socket.id)
+
+    socket.on('disconnect', () => {
+        console.log('User disconnected:', socket.id)
+    })
+})
 
 app.use(express.json({ limit: '50mb' }))
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 
+ 
 app.use(cors({
     origin: true,
     credentials: true
@@ -34,4 +55,4 @@ app.get('*all', (req, res) => {
 })
 
 const port = process.env.PORT || 3030
-app.listen(port, () => logger.info(`Server running on port: ${port}`))
+httpServer.listen(port, () => logger.info(`Server running on port: ${port}`))
