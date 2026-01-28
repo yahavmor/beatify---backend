@@ -27,6 +27,21 @@ export function setupSocketAPI(http) {
             delete socket.userId
         })
 
+        socket.on('emit-song-play', data => {
+            logger.info(`playing song ${data.song.id} from listening room`)
+            broadcast({ type: 'song-play', data: { songInfo: data.song }, userId: data.user._id })
+        })
+
+        socket.on('emit-toggle-play', data => {
+            logger.info(`playing song ${data.song.id} from listening room`)
+            broadcast({ type: 'toggle-play', data: { songInfo: data.song }, userId: data.user._id })
+        })
+
+        socket.on('joined', user => {
+            logger.info(`somoene joined`)
+            broadcast({ type: 'welcome', userId: user._id })
+        })
+
         socket.on('chat-set-topic', topic => {
             if (socket.myTopic === topic) return
             if (socket.myTopic) {
