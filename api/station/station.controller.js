@@ -62,19 +62,22 @@ export async function addStation(req, res) {
 
 
 
-export async function updateStation(req, res) {
-    const loggedinUser = req.loggedinUser
 
+export async function updateStation(req, res) {
     try {
-        const station = { ...req.body, _id: req.params.id }
+        const station = req.body
         const updatedStation = await stationService.update(station)
-        res.json(updatedStation)
-        if (station.isShared) socketService.broadcast({ type: 'station-update', data: { txt: 'added a toy', updatedStation: updatedStation }, userId: loggedinUser._id })
+        socketService.broadcast({
+            type: 'station-update',
+            data: { updatedStation },
+            userId: req.loggedinUser._id
+        })
+        res.send(updatedStation)
     } catch (err) {
-        logger.error('Failed to update station', err)
-        res.status(500).send({ err: 'Failed to update station' })
+        res.status(500).send('Cannot update station')
     }
 }
+
 
 export async function removeStation(req, res) {
     try {
