@@ -63,6 +63,8 @@ export async function addStation(req, res) {
 
 
 export async function updateStation(req, res) {
+    const loggedinUser = req.loggedinUser
+
     try {
         const station = { ...req.body, _id: req.params.id }
         const updatedStation = await stationService.update(station)
