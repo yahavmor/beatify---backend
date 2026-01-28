@@ -1,5 +1,6 @@
 import { stationService } from './station.service.js'
 import { logger } from '../../services/logger.service.js'
+import { socketService } from '../../services/socket.service.js'
 
 export async function getStations(req, res) {
     try {
@@ -13,7 +14,7 @@ export async function getStations(req, res) {
 export async function addStationToLibrary(req, res) {
     try {
         const stationId = req.params.id
-        const user = req.loggedinUser 
+        const user = req.loggedinUser
         const updatedUser = await stationService.addStationToLibrary(stationId, user)
         res.json(updatedUser)
     } catch (err) {
@@ -66,6 +67,7 @@ export async function updateStation(req, res) {
         const station = { ...req.body, _id: req.params.id }
         const updatedStation = await stationService.update(station)
         res.json(updatedStation)
+        if (station.isShared) socketService.broadcast({ type: 'station-update', data: { txt: 'added a toy', updatedStation: updatedStation }, userId: loggedinUser._id })
     } catch (err) {
         logger.error('Failed to update station', err)
         res.status(500).send({ err: 'Failed to update station' })
@@ -108,9 +110,12 @@ export async function removeStationMsg(req, res) {
 }
 
 export async function addSong(req, res) {
+    const loggedinUser = req.loggedinUser
+
     try {
         const updatedStation = await stationService.addSong(req.params.id, req.body)
         res.json(updatedStation)
+        if (updatedStation.isShared) socketService.broadcast({ type: 'station-update', data: { txt: 'added a toy', updatedStation: updatedStation }, userId: loggedinUser._id })
     } catch (err) {
         logger.error('Failed to add song', err)
         res.status(500).send({ err: 'Failed to add song' })
@@ -118,9 +123,12 @@ export async function addSong(req, res) {
 }
 
 export async function removeSong(req, res) {
+    const loggedinUser = req.loggedinUser
+
     try {
         const updatedStation = await stationService.removeSong(req.params.id, req.params.songId)
         res.json(updatedStation)
+        if (updatedStation.isShared) socketService.broadcast({ type: 'station-update', data: { txt: 'added a toy', updatedStation: updatedStation }, userId: loggedinUser._id })
     } catch (err) {
         logger.error('Failed to remove song', err)
         res.status(500).send({ err: 'Failed to remove song' })
