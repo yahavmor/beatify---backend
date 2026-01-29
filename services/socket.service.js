@@ -41,6 +41,7 @@ export function setupSocketAPI(http) {
         socket.on('emit-song-play', data => {
             logger.info(`playing song ${data.song.id} from listening room`)
             socket.broadcast.emit('song-play', { songInfo: data.song })
+
         })
 
         socket.on('emit-toggle-play', data => {
