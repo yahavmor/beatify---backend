@@ -9,8 +9,19 @@ export function setupSocketAPI(http) {
             origin: '*',
         }
     })
-
     gIo.on('connection', socket => {
+        socket.on('join-listening-room', user => {
+            const ROOM = 'LISTENING_ROOM'
+            socket.join(ROOM)
+
+            socket.to(ROOM).emit('user-joined-listening-room', user)
+        })
+        socket.on('leave-listening-room', user => {
+            const ROOM = 'LISTENING_ROOM'
+            socket.leave(ROOM)
+            socket.to(ROOM).emit('user-left-listening-room', user)
+        })
+
         logger.info(`New connected socket [id: ${socket.id}]`)
 
         socket.on('disconnect', socket => {
