@@ -44,12 +44,12 @@ export function setupSocketAPI(http) {
 
         socket.on('emit-song-play', data => {
             logger.info(`playing song ${data.song.id} from listening room`)
-            broadcast({ type: 'song-play', data: { songInfo: data.song }, userId: data.user._id })
+            socket.broadcast.emit('song-play', { songInfo: data.song })
+
         })
 
         socket.on('emit-toggle-play', data => {
-            logger.info(`playing song ${data.song.id} from listening room`)
-            broadcast({ type: 'toggle-play', data: { songInfo: data.song }, userId: data.user._id })
+            socket.broadcast.emit('toggle-play', { songInfo: data.song })
         })
         socket.on('joined', user => {
             logger.info(`somoene joined`)
