@@ -23,7 +23,7 @@ export function setupSocketAPI(http) {
         })
 
         socket.on('send-msg', msg => {
-            gIo.emit('add-msg', msg)   // שולח לכל המשתמשים
+            gIo.emit('add-msg', msg)      
         })
 
         logger.info(`New connected socket [id: ${socket.id}]`)
