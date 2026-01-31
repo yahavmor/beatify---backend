@@ -23,7 +23,7 @@ export function setupSocketAPI(http) {
         })
 
         socket.on('send-msg', msg => {
-            gIo.emit('add-msg', msg)      
+            gIo.emit('add-msg', msg)
         })
 
         logger.info(`New connected socket [id: ${socket.id}]`)
@@ -51,6 +51,15 @@ export function setupSocketAPI(http) {
         socket.on('emit-toggle-play', data => {
             socket.broadcast.emit('toggle-play', { songInfo: data.song })
         })
+
+        socket.on('emit-on-shuffle', data => {
+            socket.broadcast.emit('on-shuffle', { stationSongs: data.stationSongs })
+        })
+
+        socket.on('emit-off-shuffle', data => {
+            socket.broadcast.emit('off-shuffle', { stationSongs: data.stationSongs })
+        })
+
         socket.on('joined', user => {
             logger.info(`somoene joined`)
             broadcast({ type: 'welcome', userId: user._id })
