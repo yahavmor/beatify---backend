@@ -60,6 +60,14 @@ export function setupSocketAPI(http) {
             socket.broadcast.emit('off-shuffle', { stationSongs: data.stationSongs })
         })
 
+        socket.on('emit-on-loop', data => {
+            socket.broadcast.emit('on-loop')
+        })
+
+        socket.on('emit-off-loop', data => {
+            socket.broadcast.emit('off-loop')
+        })
+
         socket.on('joined', user => {
             logger.info(`somoene joined`)
             broadcast({ type: 'welcome', userId: user._id })
