@@ -44,8 +44,8 @@ export async function addStation(req, res) {
             averageColor: req.body.averageColor || 'rgba(0,0,0,0.5)',
             tags: req.body.tags || [],
             createdBy: {
-                _id: loggedinUser._id,
-                fullname: loggedinUser.fullname
+                _id: req.body.createdBy._id || loggedinUser._id,
+                fullname: req.body.createdBy.fullname || loggedinUser.fullname
             },
             likedByUsers: [],
             songs: req.body.songs || [],
