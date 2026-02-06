@@ -4,7 +4,7 @@ import cors from 'cors'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { logger } from './services/logger.service.js'
-
+import axios from 'axios'
 import { authRoutes } from './api/auth/auth.routes.js'
 import { userRoutes } from './api/user/user.routes.js'
 import { stationRoutes } from './api/station/station.routes.js'
@@ -28,6 +28,20 @@ app.use(cors({
     credentials: true
 }))
 
+app.get('/api/deezer', async (req, res) => {
+    try {
+        const { url } = req.query
+        console.log('Proxying request to Deezer:', url)
+
+        if (!url) return res.status(400).send('URL is required')
+
+        const response = await axios.get(url)
+        res.json(response.data)
+    } catch (err) {
+        console.error('Error in Deezer proxy route:', err.message)
+        res.status(500).json({ error: 'Failed to fetch from Deezer', details: err.message })
+    }
+})
 app.use('/api/auth', authRoutes)
 app.use('/api/user', userRoutes)
 app.use('/api/station', stationRoutes)
