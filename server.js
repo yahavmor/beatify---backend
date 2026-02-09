@@ -92,7 +92,16 @@ const corsOptions = {
     credentials: true
 }
 app.use(cors(corsOptions))
-
+app.use(session({
+    secret: 'your-secret',
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        secure: true,
+        sameSite: 'none',
+        httpOnly: true
+    }
+}))
 // Deezer Proxy
 app.get('/api/deezer', async (req, res) => {
     try {
