@@ -1,0 +1,20 @@
+<svg width="500" height="500" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="250" cy="250" r="200" fill="white"/>
+  
+  <path d="M170 110 
+           L340 160 
+           L300 240 
+           L360 320 
+           L320 390 
+           L160 375 
+           L190 250 
+           L170 110 Z 
+           M210 150 
+           L290 190 
+           L240 250 
+           L300 320 
+           L210 350 
+           Z" 
+        fill="black" 
+        fill-rule="evenodd"/>
+</svg>
