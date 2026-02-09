@@ -5,8 +5,17 @@ var gIo = null
 
 export function setupSocketAPI(http) {
     gIo = new Server(http, {
+        // cors: {
+        //     origin: '*',
+        // }
         cors: {
-            origin: '*',
+            origin: [
+                "http://localhost:5173",
+                "http://127.0.0.1:5173",
+                "https://beatproject.vercel.app"
+            ],
+            methods: ["GET", "POST"],
+            credentials: true
         }
     })
     gIo.on('connection', socket => {
