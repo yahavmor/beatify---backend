@@ -1,8 +1,6 @@
-# Mister Backend
+# Beatify Backend
 
-### Made by Coding Academy
-
-A full-featured Node.js backend starter project designed for teaching modern backend development concepts.
+A full-featured Node.js backend project, a part of and end-to-end app.
 
 ## 🚀 Features
 
